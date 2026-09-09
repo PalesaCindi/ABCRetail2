@@ -1,7 +1,32 @@
+using ABCRetail.Data;
+using ABCRetail.Models;
+using ABCRetail.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("ABCRetailContext") ?? throw new InvalidOperationException("Connection string 'ABCRetailContext' not found.");
+
+builder.Services.AddDbContext<ABCRetailContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+})
+.AddEntityFrameworkStores<ABCRetailContext>()
+.AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSingleton<TableStorageService>();
+builder.Services.AddSingleton<BlobStorageService>();
+builder.Services.AddSingleton<QueueStorageService>();
 
 var app = builder.Build();
 
