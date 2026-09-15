@@ -1,55 +1,95 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace ABCRetail.Services
 {
     public class BlobStorageService
     {
-        private readonly string _connectionString;
+        private readonly BlobContainerClient _container;
 
         public BlobStorageService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AzureStorage")
+            string connectionString =
+                configuration["AzureStorage:ConnectionString"]
                 ?? throw new InvalidOperationException(
-                    "AzureStorage connection string is missing.");
+                    "Azure Storage connection string is missing.");
+
+            _container = new BlobContainerClient(
+                connectionString,
+                "product-images");
         }
 
-        public async Task<string> UploadFileAsync(
-            Stream fileStream,
-            string fileName,
-            string containerName)
+        public async Task InitializeAsync()
         {
-            BlobServiceClient blobServiceClient =
-                new BlobServiceClient(_connectionString);
-
-            BlobContainerClient containerClient =
-                blobServiceClient.GetBlobContainerClient(containerName);
-
-            await containerClient.CreateIfNotExistsAsync();
-
-            BlobClient blobClient =
-                containerClient.GetBlobClient(fileName);
-
-            await blobClient.UploadAsync(
-                fileStream,
-                overwrite: true);
-
-            return blobClient.Uri.ToString();
+            await _container.CreateIfNotExistsAsync(
+                PublicAccessType.Blob);
         }
 
-        public async Task DeleteFileAsync(
-            string fileName,
-            string containerName)
+        public async Task<string> UploadImageAsync(
+            IFormFile image)
         {
-            BlobServiceClient blobServiceClient =
-                new BlobServiceClient(_connectionString);
+            if (image == null || image.Length == 0)
+            {
+                throw new ArgumentException(
+                    "Please select an image.");
+            }
 
-            BlobContainerClient containerClient =
-                blobServiceClient.GetBlobContainerClient(containerName);
+            string extension =
+                Path.GetExtension(image.FileName);
 
-            BlobClient blobClient =
-                containerClient.GetBlobClient(fileName);
+            string fileName =
+                $"{Guid.NewGuid()}{extension}";
 
-            await blobClient.DeleteIfExistsAsync();
+            BlobClient blob =
+                _container.GetBlobClient(fileName);
+
+            using Stream stream =
+                image.OpenReadStream();
+
+            await blob.UploadAsync(
+                stream,
+                new BlobHttpHeaders
+                {
+                    ContentType = image.ContentType
+                });
+
+            return blob.Uri.ToString();
         }
+        public async Task<(byte[] Content, string ContentType)?> GetImageAsync(
+    string imageUrl)
+{
+    if (string.IsNullOrEmpty(imageUrl))
+    {
+        return null;
+    }
+
+    Uri uri = new Uri(imageUrl);
+
+    string blobName =
+        uri.AbsolutePath
+           .Substring(uri.AbsolutePath.IndexOf(
+               "/product-images/") + "/product-images/".Length);
+
+    BlobClient blob =
+        _container.GetBlobClient(blobName);
+
+    if (!await blob.ExistsAsync())
+    {
+        return null;
+    }
+
+    var download =
+        await blob.DownloadAsync();
+
+    using var memoryStream =
+        new MemoryStream();
+
+    await download.Value.Content.CopyToAsync(memoryStream);
+
+    return (
+        memoryStream.ToArray(),
+        download.Value.ContentType
+    );
+}
     }
 }

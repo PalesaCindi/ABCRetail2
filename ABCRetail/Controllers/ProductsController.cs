@@ -1,150 +1,271 @@
 
-using ABCRetail.Data;
 using ABCRetail.Models;
+using ABCRetail.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
-public class ProductsController : Controller
+namespace ABCRetail.Controllers
 {
-    private readonly ABCRetailContext _context;
-
-    public ProductsController(ABCRetailContext context)
+    public class ProductsController : Controller
     {
-        _context = context;
-    }
+        private readonly TableStorageService _tableStorage;
+        private readonly BlobStorageService _blobStorage;
 
-    // GET: PRODUCTS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Product.ToListAsync());
-    }
-
-    // GET: PRODUCTS/Details/5
-    public async Task<IActionResult> Details(string? id)
-    {
-        if (id == null)
+        public ProductsController(
+            TableStorageService tableStorage,
+            BlobStorageService blobStorage)
         {
-            return NotFound();
+            _tableStorage = tableStorage;
+            _blobStorage = blobStorage;
         }
 
-        var product = await _context.Product
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (product == null)
+        // =====================================================
+        // GET: Products
+        // =====================================================
+        public async Task<IActionResult> Index()
         {
-            return NotFound();
+            var products = await _tableStorage.GetProductsAsync();
+
+            return View(products);
         }
 
-        return View(product);
-    }
-
-    // GET: PRODUCTS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: PRODUCTS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PartitionKey,RowKey,Timestamp,ETag,Id,ProductName,Description,Price,Quantity,ImageUrl")] Product product)
-    {
-        if (ModelState.IsValid)
+        // =====================================================
+        // GET: Products/Details/5
+        // =====================================================
+        public async Task<IActionResult> Details(string? id)
         {
-            _context.Add(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(product);
-    }
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
 
-    // GET: PRODUCTS/Edit/5
-    public async Task<IActionResult> Edit(string? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
+            var product = await _tableStorage.GetProductAsync(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
 
-        var product = await _context.Product.FindAsync(id);
-        if (product == null)
+        // =====================================================
+        // GET: Products/Create
+        // =====================================================
+        public IActionResult Create()
         {
-            return NotFound();
-        }
-        return View(product);
-    }
-
-    // POST: PRODUCTS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string? id, [Bind("PartitionKey,RowKey,Timestamp,ETag,Id,ProductName,Description,Price,Quantity,ImageUrl")] Product product)
-    {
-        if (id != product.Id)
-        {
-            return NotFound();
+            return View();
         }
 
-        if (ModelState.IsValid)
+        // =====================================================
+        // POST: Products/Create
+        // =====================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            Product product,
+            IFormFile? image)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(product);
+            }
+
             try
             {
-                _context.Update(product);
-                await _context.SaveChangesAsync();
+                // Upload image to Azure Blob Storage
+                if (image != null && image.Length > 0)
+                {
+                    product.ImageUrl =
+                        await _blobStorage.UploadImageAsync(image);
+                }
+
+                // Save product to Azure Table Storage
+                await _tableStorage.AddProductAsync(product);
+
+                TempData["SuccessMessage"] =
+                    "Product created successfully.";
+
+                return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!ProductExists(product.Id))
+                ModelState.AddModelError(
+                    "",
+                    "Unable to save product: " + ex.Message);
+
+                return View(product);
+            }
+        }
+
+        // =====================================================
+        // GET: Products/Edit/5
+        // =====================================================
+        public async Task<IActionResult> Edit(string? id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var product = await _tableStorage.GetProductAsync(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        // =====================================================
+        // POST: Products/Edit/5
+        // =====================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            string? id,
+            Product product,
+            IFormFile? image)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            if (id != product.Id)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(product);
+            }
+
+            try
+            {
+                // Get the existing product first
+                var existingProduct =
+                    await _tableStorage.GetProductAsync(id);
+
+                if (existingProduct == null)
                 {
                     return NotFound();
                 }
-                else
+
+                // Preserve the existing image if no new image is uploaded
+                product.ImageUrl = existingProduct.ImageUrl;
+
+                // Upload new image if selected
+                if (image != null && image.Length > 0)
                 {
-                    throw;
+                    product.ImageUrl =
+                        await _blobStorage.UploadImageAsync(image);
                 }
+
+                // Keep Azure Table Storage values
+                product.PartitionKey = existingProduct.PartitionKey;
+                product.RowKey = existingProduct.RowKey;
+                product.ETag = existingProduct.ETag;
+                product.Timestamp = existingProduct.Timestamp;
+
+                // Update product
+                await _tableStorage.UpdateProductAsync(product);
+
+                TempData["SuccessMessage"] =
+                    "Product updated successfully.";
+
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(product);
-    }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(
+                    "",
+                    "Unable to update product: " + ex.Message);
 
-    // GET: PRODUCTS/Delete/5
-    public async Task<IActionResult> Delete(string? id)
-    {
-        if (id == null)
+                return View(product);
+            }
+        }
+
+        // =====================================================
+        // GET: Products/Delete/5
+        // =====================================================
+        public async Task<IActionResult> Delete(string? id)
         {
-            return NotFound();
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var product = await _tableStorage.GetProductAsync(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
 
-        var product = await _context.Product
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (product == null)
+        // =====================================================
+        // POST: Products/Delete/5
+        // =====================================================
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string? id)
         {
-            return NotFound();
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await _tableStorage.DeleteProductAsync(id);
+
+                TempData["SuccessMessage"] =
+                    "Product deleted successfully.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] =
+                    "Unable to delete product: " + ex.Message;
+
+                return RedirectToAction(nameof(Index));
+            }
         }
-
-        return View(product);
-    }
-
-    // POST: PRODUCTS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(string? id)
-    {
-        var product = await _context.Product.FindAsync(id);
-        if (product != null)
+        [HttpGet]
+        public async Task<IActionResult> Image(string id)
         {
-            _context.Product.Remove(product);
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var product =
+                await _tableStorage.GetProductAsync(id);
+
+            if (product == null ||
+                string.IsNullOrEmpty(product.ImageUrl))
+            {
+                return NotFound();
+            }
+
+            var image =
+                await _blobStorage.GetImageAsync(product.ImageUrl);
+
+            if (image == null)
+            {
+                return NotFound();
+            }
+
+            return File(
+                image.Value.Content,
+                image.Value.ContentType);
         }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool ProductExists(string? id)
-    {
-        return _context.Product.Any(e => e.Id == id);
     }
 }

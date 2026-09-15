@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("ABCRetailContext") ?? throw new InvalidOperationException("Connection string 'ABCRetailContext' not found.");
+
 
 builder.Services.AddDbContext<ABCRetailContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -21,12 +22,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ABCRetailContext>()
 .AddDefaultTokenProviders();
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+
 
 builder.Services.AddSingleton<TableStorageService>();
 builder.Services.AddSingleton<BlobStorageService>();
 builder.Services.AddSingleton<QueueStorageService>();
+builder.Services.AddSingleton<FileStorageService>();
 
 var app = builder.Build();
 
@@ -41,6 +47,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -50,5 +57,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
+app.MapRazorPages();
 app.Run();

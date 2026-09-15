@@ -1,0 +1,155 @@
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="fw-bold mb-1">Orders</h1>
+
+            <p class="text-muted mb-0">
+                Submit and process customer orders using Azure Queue Storage.
+            </p>
+        </div>
+
+        <a asp-action="Create"
+           class="btn btn-primary">
+            + Create New Order
+        </a>
+
+    </div>
+
+    <!-- Queue Information -->
+    <div class="row g-4">
+
+        <!-- Order Processing -->
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-3">
+
+                        <div class="display-6 me-3">
+                            📦
+                        </div>
+
+                        <div>
+                            <h4 class="mb-1">
+                                Order Processing
+                            </h4>
+
+                            <span class="badge bg-primary">
+                                Azure Queue Storage
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <p class="text-muted">
+                        New orders are sent to the
+                        <strong>order-processing</strong>
+                        Azure Queue for processing.
+                    </p>
+
+                    <a asp-action="Create"
+                       class="btn btn-primary">
+                        Create Order
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Order Workflow -->
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-3">
+
+                        <div class="display-6 me-3">
+                            ⚙️
+                        </div>
+
+                        <div>
+                            <h4 class="mb-1">
+                                Order Workflow
+                            </h4>
+
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <p class="text-muted">
+                        Orders are submitted with customer,
+                        product, quantity and payment information.
+                    </p>
+
+                    <ul class="text-muted">
+                        <li>Customer ID</li>
+                        <li>Product ID</li>
+                        <li>Quantity</li>
+                        <li>Total Amount</li>
+                        <li>Order Date</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Azure Queue Information -->
+    <div class="card border-0 shadow-sm mt-4">
+
+        <div class="card-body p-4">
+
+            <h4 class="mb-3">
+                Azure Queue Storage
+            </h4>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <h6>Queue Name</h6>
+
+                    <p>
+                        <span class="badge bg-secondary">
+                            order-processing
+                        </span>
+                    </p>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <h6>Purpose</h6>
+
+                    <p class="text-muted mb-0">
+                        Reliable asynchronous order processing.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

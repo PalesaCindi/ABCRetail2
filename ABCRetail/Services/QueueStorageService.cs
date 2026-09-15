@@ -10,9 +10,10 @@ namespace ABCRetail.Services
 
         public QueueStorageService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("AzureStorage")
+            _connectionString =
+                configuration["AzureStorage:ConnectionString"]
                 ?? throw new InvalidOperationException(
-                    "AzureStorage connection string is missing.");
+                    "Azure Storage connection string is missing.");
         }
 
         public async Task SendMessageAsync(

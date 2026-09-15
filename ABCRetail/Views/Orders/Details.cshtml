@@ -1,0 +1,103 @@
+@model ABCRetail.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container py-4">
+
+    <div class="row">
+        <div class="col-md-7">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-3">
+
+                        <div class="display-6 me-3">
+                            📦
+                        </div>
+
+                        <div>
+                            <h1 class="mb-1">Order Details</h1>
+
+                            <p class="text-muted mb-0">
+                                Order submitted for processing.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <dl class="row">
+
+                        <dt class="col-sm-4">
+                            Customer ID
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.CustomerId)
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Product ID
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.ProductId)
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Quantity
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Quantity)
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Total Amount
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.TotalAmount)
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Status
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-warning text-dark">
+                                @Html.DisplayFor(model => model.Status)
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Order Date
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.OrderDate)
+                        </dd>
+
+                    </dl>
+
+                    <hr />
+
+                    <div class="alert alert-info">
+                        <strong>Azure Queue Storage</strong>
+                        <br />
+                        This order is submitted to the
+                        <strong>order-processing</strong> queue.
+                    </div>
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+                        Back to Orders
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

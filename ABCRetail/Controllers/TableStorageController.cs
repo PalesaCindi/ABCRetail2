@@ -1,12 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ABCRetail.Models;
+using ABCRetail.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ABCRetail.Controllers
 {
     public class TableStorageController : Controller
     {
-        public IActionResult Index()
+        private readonly TableStorageService _tableStorage;
+
+        public TableStorageController(TableStorageService tableStorage)
         {
-            return View();
+            _tableStorage = tableStorage;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var products = await _tableStorage.GetProductsAsync();
+
+            return View(products);
         }
     }
 }

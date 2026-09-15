@@ -1,25 +1,41 @@
-using ABCRetail.Models;
+using ABCRetail.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace ABCRetail.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly FileStorageService _fileStorageService;
+
+        public HomeController(FileStorageService fileStorageService)
         {
+            _fileStorageService = fileStorageService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            await _fileStorageService.WriteLogAsync(
+                "application-log.txt",
+                $"Application accessed at {DateTime.Now}");
+
             return View();
         }
 
-        public IActionResult Privacy()
+        [HttpGet]
+        public async Task<IActionResult> DownloadLog()
         {
-            return View();
-        }
+            var file = await _fileStorageService.DownloadLogAsync(
+                "application-log.txt");
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (file == null)
+            {
+                return NotFound("Log file was not found.");
+            }
+
+            return File(
+                file,
+                "text/plain",
+                "application-log.txt");
         }
     }
 }

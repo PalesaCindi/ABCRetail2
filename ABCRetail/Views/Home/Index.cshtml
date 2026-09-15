@@ -1,8 +1,278 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "ABC Retail Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid py-4">
+
+    <!-- Hero Section -->
+    <div class="p-5 mb-4 bg-primary text-white rounded-4 shadow">
+
+        <div class="container-fluid py-3">
+
+            <span class="text-uppercase fw-bold">
+                ABC Retail Management System
+            </span>
+
+            <h1 class="display-5 fw-bold mt-2">
+                Welcome to ABC Retail
+            </h1>
+
+            <p class="fs-5">
+                Manage your products, customers and orders
+                using Azure cloud services from one central system.
+            </p>
+
+            <a asp-controller="Products"
+               asp-action="Index"
+               class="btn btn-light btn-lg me-2">
+                View Products
+            </a>
+
+            <a asp-controller="Customers"
+               asp-action="Index"
+               class="btn btn-outline-light btn-lg">
+                View Customers
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="row g-4">
+
+        <!-- Products -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="display-5 mb-3">
+                        🛍️
+                    </div>
+
+                    <h4>Products</h4>
+
+                    <p class="text-muted">
+                        Manage product information,
+                        prices, quantities and images.
+                    </p>
+
+                    <a asp-controller="Products"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                        Manage Products
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Customers -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="display-5 mb-3">
+                        👥
+                    </div>
+
+                    <h4>Customers</h4>
+
+                    <p class="text-muted">
+                        View and manage customer
+                        profiles and information.
+                    </p>
+
+                    <a asp-controller="Customers"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                        Manage Customers
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Orders -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="display-5 mb-3">
+                        📦
+                    </div>
+
+                    <h4>Orders</h4>
+
+                    <p class="text-muted">
+                        Create and submit customer
+                        orders for processing.
+                    </p>
+
+                    <a asp-controller="Orders"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                        Manage Orders
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Queue -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="display-5 mb-3">
+                        ⚙️
+                    </div>
+
+                    <h4>Queue</h4>
+
+                    <p class="text-muted">
+                        Process orders using
+                        Azure Queue Storage.
+                    </p>
+
+                    <a asp-controller="Orders"
+                       asp-action="Index"
+                       class="btn btn-primary">
+                        View Queue
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- Azure Files -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+
+                    <div class="display-5 mb-3">
+                        📄
+                    </div>
+
+                    <h4>Application Logs</h4>
+
+                    <p class="text-muted">
+                        Application log files are stored in Azure Files.
+                    </p>
+
+                    <a asp-controller="Home"
+                       asp-action="DownloadLog"
+                       class="btn btn-primary">
+                        Download Log File
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Azure Services -->
+    <div class="mt-5">
+
+        <h2 class="mb-4">
+            Azure Services
+        </h2>
+
+        <div class="row g-4">
+
+            <!-- Table Storage -->
+            <div class="col-md-3">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <h5>Azure Table Storage</h5>
+
+                        <p class="text-muted mb-0">
+                            Customer and product information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Blob Storage -->
+            <div class="col-md-3">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <h5>Azure Blob Storage</h5>
+
+                        <p class="text-muted mb-0">
+                            Product images and multimedia.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Queue Storage -->
+            <div class="col-md-3">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <h5>Azure Queue Storage</h5>
+
+                        <p class="text-muted mb-0">
+                            Order and inventory processing.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Azure Files -->
+            <div class="col-md-3">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <h5>Azure Files</h5>
+
+                        <p class="text-muted mb-0">
+                            Application logs and files.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>

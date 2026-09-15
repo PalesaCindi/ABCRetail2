@@ -1,0 +1,84 @@
+@model ABCRetail.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<div class="container py-4">
+
+    <div class="row">
+        <div class="col-md-7">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <h1 class="mb-2">Customer Details</h1>
+
+                    <p class="text-muted">
+                        View customer information.
+                    </p>
+
+                    <hr />
+
+                    <dl class="row">
+
+                        <!-- Name -->
+                        <dt class="col-sm-4">
+                            Customer Name
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+
+                        <!-- Email -->
+                        <dt class="col-sm-4">
+                            Email Address
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Email)
+                        </dd>
+
+                        <!-- Phone -->
+                        <dt class="col-sm-4">
+                            Phone Number
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Phone)
+                        </dd>
+
+                        <!-- Address -->
+                        <dt class="col-sm-4">
+                            Address
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Address)
+                        </dd>
+
+                    </dl>
+
+                    <hr />
+
+                    <div class="d-flex gap-2">
+
+                        <a asp-action="Edit"
+                           asp-route-id="@Model?.Id"
+                           class="btn btn-primary">
+                            Edit Customer
+                        </a>
+
+                        <a asp-action="Index"
+                           class="btn btn-secondary">
+                            Back to Customers
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

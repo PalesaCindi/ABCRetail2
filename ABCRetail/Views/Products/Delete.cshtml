@@ -1,0 +1,117 @@
+@model ABCRetail.Models.Product
+
+@{
+    ViewData["Title"] = "Delete Product";
+}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h1 class="text-danger mb-2">
+                        Delete Product
+                    </h1>
+
+                    <p class="text-muted">
+                        Are you sure you want to delete this product?
+                    </p>
+
+                    <hr />
+
+                    <div class="alert alert-warning">
+                        <strong>Warning</strong>
+                        <br />
+                        This action will permanently remove the product
+                        from Azure Table Storage.
+                    </div>
+
+                    <dl class="row">
+
+                        <dt class="col-sm-4">
+                            Product Name
+                        </dt>
+
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.ProductName)
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Description
+                        </dt>
+
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Description)
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Price
+                        </dt>
+
+                        <dd class="col-sm-8">
+                            R @Model.Price.ToString("N2")
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Quantity
+                        </dt>
+
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Quantity)
+                        </dd>
+
+                    </dl>
+
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+
+                            <h6 class="fw-semibold">
+                                Product Image
+                            </h6>
+
+                            <img src="@Model.ImageUrl"
+                                 alt="@Model.ProductName"
+                                 class="img-thumbnail"
+                                 style="max-width: 200px; max-height: 160px; object-fit: cover;" />
+
+                        </div>
+                    }
+
+                    <hr />
+
+                    <form asp-action="Delete" method="post">
+
+                        <input type="hidden"
+                               asp-for="Id" />
+
+                        <div class="d-flex gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-danger">
+                                Delete Product
+                            </button>
+
+                            <a asp-action="Index"
+                               class="btn btn-secondary">
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

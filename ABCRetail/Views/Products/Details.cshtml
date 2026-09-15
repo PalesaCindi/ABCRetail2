@@ -1,0 +1,126 @@
+@model ABCRetail.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-3">
+
+                        <div class="display-6 me-3">
+                            📦
+                        </div>
+
+                        <div>
+                            <h1 class="mb-1">Product Details</h1>
+
+                            <p class="text-muted mb-0">
+                                View product information.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+
+                        <!-- Product Image -->
+
+                        <div class="col-md-5 text-center mb-4">
+
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl"
+                                     alt="@Model.ProductName"
+                                     class="img-fluid rounded shadow-sm"
+                                     style="max-height: 300px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="border rounded p-5 text-muted">
+                                    No product image
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- Product Information -->
+
+                        <div class="col-md-7">
+
+                            <dl class="row">
+
+                                <dt class="col-sm-5">
+                                    Product Name
+                                </dt>
+
+                                <dd class="col-sm-7">
+                                    @Html.DisplayFor(model => model.ProductName)
+                                </dd>
+
+                                <dt class="col-sm-5">
+                                    Description
+                                </dt>
+
+                                <dd class="col-sm-7">
+                                    @Html.DisplayFor(model => model.Description)
+                                </dd>
+
+                                <dt class="col-sm-5">
+                                    Price
+                                </dt>
+
+                                <dd class="col-sm-7">
+                                    R @Model.Price.ToString("N2")
+                                </dd>
+
+                                <dt class="col-sm-5">
+                                    Quantity
+                                </dt>
+
+                                <dd class="col-sm-7">
+                                    @Html.DisplayFor(model => model.Quantity)
+                                </dd>
+
+                            </dl>
+
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex gap-2">
+
+                        <a asp-action="Edit"
+                           asp-route-id="@Model?.RowKey"
+                           class="btn btn-primary">
+                            Edit Product
+                        </a>
+
+                        <a asp-action="Index"
+                           class="btn btn-secondary">
+                            Back to Products
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

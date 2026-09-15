@@ -29,3 +29,161 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+/* =========================================
+   ABC RETAIL - CUSTOMER PAGES
+   ========================================= */
+
+.customer-page {
+    padding: 40px 0;
+}
+
+.customer-header {
+    margin-bottom: 30px;
+}
+
+    .customer-header h1 {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .customer-header p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+/* Main customer card */
+.customer-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.customer-card-header {
+    padding: 22px 25px;
+    border-bottom: 1px solid #eeeeee;
+    background: #f8f9fa;
+}
+
+    .customer-card-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+.customer-card-body {
+    padding: 30px;
+}
+
+/* Form labels */
+.customer-form label {
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.customer-form .form-control {
+    border-radius: 8px;
+    padding: 11px 13px;
+    border: 1px solid #ced4da;
+}
+
+    .customer-form .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    }
+
+/* Buttons */
+.customer-btn {
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+}
+
+.customer-btn-danger {
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+}
+
+/* Customer details */
+.customer-details {
+    margin-bottom: 0;
+}
+
+    .customer-details dt {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 12px;
+    }
+
+    .customer-details dd {
+        color: #212529;
+        margin-bottom: 20px;
+    }
+
+/* Customer table */
+.customer-table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.07);
+}
+
+    .customer-table thead {
+        background: #f8f9fa;
+    }
+
+    .customer-table th {
+        font-weight: 600;
+        padding: 15px;
+    }
+
+    .customer-table td {
+        padding: 15px;
+        vertical-align: middle;
+    }
+
+    .customer-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+/* Action buttons */
+.customer-action {
+    border-radius: 7px;
+    padding: 6px 12px;
+    font-size: 14px;
+    text-decoration: none;
+    margin-right: 4px;
+}
+
+    .customer-action:last-child {
+        margin-right: 0;
+    }
+
+/* Delete warning */
+.delete-card {
+    border-top: 5px solid #dc3545;
+}
+
+.delete-warning {
+    background: #fff5f5;
+    border-radius: 10px;
+    padding: 15px 18px;
+    margin-bottom: 25px;
+    color: #842029;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .customer-page {
+        padding: 25px 15px;
+    }
+
+    .customer-card-body {
+        padding: 20px;
+    }
+
+    .customer-table {
+        overflow-x: auto;
+    }
+}
