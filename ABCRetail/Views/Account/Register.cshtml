@@ -1,8 +1,5 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model ABCRetail.Models.RegisterViewModel
+
 @{
     ViewData["Title"] = "Register";
 }
@@ -15,34 +12,31 @@
          class="text-danger"></div>
 
     <div class="mb-3">
-        <label class="form-label">Full Name</label>
-        <input name="fullName"
-               class="form-control"
-               required />
+        <label asp-for="FullName" class="form-label"></label>
+        <input asp-for="FullName"
+               class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input name="email"
-               type="email"
-               class="form-control"
-               required />
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email"
+               class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input name="password"
-               type="password"
-               class="form-control"
-               required />
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password"
+               class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Confirm Password</label>
-        <input name="confirmPassword"
-               type="password"
-               class="form-control"
-               required />
+        <label asp-for="ConfirmPassword" class="form-label"></label>
+        <input asp-for="ConfirmPassword"
+               class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
 
     <button type="submit"
@@ -59,3 +53,9 @@
         Login here
     </a>
 </p>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

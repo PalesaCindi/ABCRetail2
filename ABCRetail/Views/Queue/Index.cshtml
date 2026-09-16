@@ -1,0 +1,449 @@
+﻿@{
+    ViewData["Title"] = "Queue Processing";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="mb-4">
+        <h1 class="fw-bold">Queue Processing</h1>
+
+        <p class="text-muted">
+            Monitor order, inventory and image processing messages.
+        </p>
+    </div>
+
+
+    <!-- =========================
+         ORDER PROCESSING
+    ========================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4 class="mb-1">
+                📦 Order Processing
+            </h4>
+
+            <small>
+                Workflow:
+                <strong>Received</strong>
+                →
+                <strong>Processing</strong>
+                →
+                <strong>Packing</strong>
+                →
+                <strong>Shipped</strong>
+                →
+                <strong>Delivered</strong>
+            </small>
+
+        </div>
+
+        <div class="card-body">
+
+            @if (ViewBag.OrderMessages != null &&
+                 ViewBag.OrderMessages.Count > 0)
+            {
+                foreach (var order in ViewBag.OrderMessages)
+                {
+                    <div class="border rounded p-4 mb-3 shadow-sm">
+
+                        <div class="row">
+
+                            <!-- ORDER ID -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Order ID
+                                </small>
+
+                                <div class="fw-bold text-break">
+                                    @(order.ContainsKey("OrderId")
+                                        ? order["OrderId"]
+                                        : "Not available")
+                                </div>
+
+                            </div>
+
+
+                            <!-- CUSTOMER ID -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Customer ID
+                                </small>
+
+                                <div class="fw-bold">
+                                    @(order.ContainsKey("CustomerId")
+                                        ? order["CustomerId"]
+                                        : "Not available")
+                                </div>
+
+                            </div>
+
+
+                            <!-- PRODUCT ID -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Product ID
+                                </small>
+
+                                <div class="fw-bold">
+                                    @(order.ContainsKey("ProductId")
+                                        ? order["ProductId"]
+                                        : "Not available")
+                                </div>
+
+                            </div>
+
+
+                            <!-- QUANTITY -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Quantity
+                                </small>
+
+                                <div>
+                                    @(order.ContainsKey("Quantity")
+                                        ? order["Quantity"]
+                                        : "Not available")
+                                </div>
+
+                            </div>
+
+
+                            <!-- TOTAL AMOUNT -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Total Amount
+                                </small>
+
+                                <div class="fw-bold">
+                                    R @(order.ContainsKey("TotalAmount")
+                                                                            ? order["TotalAmount"]
+                                                                            : "Not available")
+                                </div>
+
+                            </div>
+
+
+                            <!-- STATUS -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Status
+                                </small>
+
+                                <div>
+
+                                    <span class="badge bg-primary">
+
+                                        @(order.ContainsKey("Status")
+                                            ? order["Status"]
+                                            : "Not available")
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ORDER DATE -->
+                            <div class="col-md-6">
+
+                                <small class="text-muted">
+                                    Order Date
+                                </small>
+
+                                <div>
+                                    @(order.ContainsKey("OrderDate")
+                                        ? order["OrderDate"]
+                                        : "Not available")
+                                </div>
+
+                            </div>
+
+
+                            <!-- PROCESSED DATE -->
+                            <div class="col-md-6">
+
+                                <small class="text-muted">
+                                    Processed At
+                                </small>
+
+                                <div>
+                                    @(order.ContainsKey("ProcessedAt")
+                                        ? order["ProcessedAt"]
+                                        : "Not available")
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-light border">
+                    No order messages currently available.
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================
+         INVENTORY PROCESSING
+    ========================== -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header bg-success text-white">
+
+            <h4 class="mb-0">
+                📊 Inventory Processing
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            @if (ViewBag.InventoryMessages != null &&
+                 ViewBag.InventoryMessages.Count > 0)
+            {
+                foreach (var inventory in ViewBag.InventoryMessages)
+                {
+                    <div class="border rounded p-4 mb-3 shadow-sm">
+
+                        <div class="row">
+
+                            <!-- ORDER ID -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Order ID
+                                </small>
+
+                                <div class="fw-bold text-break">
+
+                                    @(inventory.ContainsKey("OrderId")
+                                        ? inventory["OrderId"]
+                                        : "Not available")
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PRODUCT ID -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Product ID
+                                </small>
+
+                                <div class="text-break">
+
+                                    @(inventory.ContainsKey("ProductId")
+                                        ? inventory["ProductId"]
+                                        : "Not available")
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- QUANTITY -->
+                            <div class="col-md-4 mb-3">
+
+                                <small class="text-muted">
+                                    Quantity
+                                </small>
+
+                                <div>
+
+                                    @(inventory.ContainsKey("Quantity")
+                                        ? inventory["Quantity"]
+                                        : "Not available")
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ACTION -->
+                            <div class="col-md-6">
+
+                                <small class="text-muted">
+                                    Action
+                                </small>
+
+                                <div>
+
+                                    <span class="badge bg-success">
+
+                                        @(inventory.ContainsKey("Action")
+                                            ? inventory["Action"]
+                                            : "Not available")
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PROCESSED AT -->
+                            <div class="col-md-6">
+
+                                <small class="text-muted">
+                                    Processed At
+                                </small>
+
+                                <div>
+
+                                    @(inventory.ContainsKey("ProcessedAt")
+                                        ? inventory["ProcessedAt"]
+                                        : "Not available")
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-light border">
+                    No inventory messages currently available.
+                </div>
+            }
+
+        </div>
+
+        <!-- =========================
+         IMAGE PROCESSING
+    ========================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-warning">
+
+                <h4 class="mb-0">
+                    🖼️ Image Processing
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                @if (ViewBag.ImageMessages != null &&
+                     ViewBag.ImageMessages.Count > 0)
+                {
+                    foreach (var image in ViewBag.ImageMessages)
+                    {
+                        <div class="border rounded p-4 mb-3 shadow-sm">
+
+                            <div class="row">
+
+                                <!-- PRODUCT ID -->
+                                <div class="col-md-6 mb-3">
+
+                                    <small class="text-muted">
+                                        Product ID
+                                    </small>
+
+                                    <div class="fw-bold text-break">
+
+                                        @(image.ContainsKey("ProductID")
+                                            ? image["ProductID"]
+                                            : "Not available")
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- IMAGE URL -->
+                                <div class="col-md-6 mb-3">
+
+                                    <small class="text-muted">
+                                        Image
+                                    </small>
+
+                                    <div class="text-break">
+
+                                        @(image.ContainsKey("ImageUrl")
+                                            ? image["ImageUrl"]
+                                            : "Not available")
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- PROCESSED AT -->
+                                <div class="col-md-6">
+
+                                    <small class="text-muted">
+                                        Processed At
+                                    </small>
+
+                                    <div>
+
+                                        @(image.ContainsKey("ProcessedAt")
+                                            ? image["ProcessedAt"]
+                                            : "Not available")
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-light border">
+
+                        <strong>
+                            No image processing messages currently available.
+                        </strong>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+
+    </div>
+    </div>
+    <div class="mt-4">
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-secondary">
+            ← Back to Dashboard
+        </a>
+    </div>
+

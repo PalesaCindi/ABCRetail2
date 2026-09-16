@@ -1,4 +1,5 @@
 ﻿using ABCRetail.Models;
+using ABCRetail.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,63 +9,73 @@ namespace ABCRetail.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly AuditLogService _auditLogService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            AuditLogService auditLogService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _auditLogService = auditLogService;
         }
 
         // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            return View(new RegisterViewModel());
         }
 
         // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(
-            string fullName,
-            string email,
-            string password,
-            string confirmPassword)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (password != confirmPassword)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(
-                    "Password",
-                    "Passwords do not match.");
-
-                return View();
+                // model is passed back, so FullName/Email are repopulated in the view
+                return View(model);
             }
 
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            var existingUser =
+                await _userManager.FindByEmailAsync(model.Email);
 
             if (existingUser != null)
             {
                 ModelState.AddModelError(
-                    "Email",
+                    nameof(model.Email),
                     "An account with this email already exists.");
 
-                return View();
+                return View(model);
             }
 
             var user = new ApplicationUser
             {
-                UserName = email,
-                Email = email,
-                FullName = fullName
+                UserName = model.Email,
+                Email = model.Email,
+                FullName = model.FullName
             };
 
-            var result = await _userManager.CreateAsync(user, password);
+            var result =
+                await _userManager.CreateAsync(
+                    user,
+                    model.Password);
 
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                // Record new user registration in Azure Files
+                await _auditLogService.LogAsync(
+                    $"New user registered: {model.Email}");
+
+                await _signInManager.SignInAsync(
+                    user,
+                    isPersistent: false);
+
+                // Record successful login
+                await _auditLogService.LogAsync(
+                    $"User logged in: {model.Email}");
 
                 return RedirectToAction(
                     "Index",
@@ -78,41 +89,60 @@ namespace ABCRetail.Controllers
                     error.Description);
             }
 
-            return View();
+            return View(model);
         }
 
         // GET: /Account/Login
         [HttpGet]
         public IActionResult Login()
         {
-            return View();
+            return View(new LoginViewModel());
         }
 
         // POST: /Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(
-            string email,
-            string password)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(
-                email,
-                password,
-                isPersistent: false,
-                lockoutOnFailure: false);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var result =
+                await _signInManager.PasswordSignInAsync(
+                    model.Email,
+                    model.Password,
+                    isPersistent: model.RememberMe,
+                    lockoutOnFailure: true);
 
             if (result.Succeeded)
             {
+                await _auditLogService.LogAsync(
+                    $"User logged in: {model.Email}");
+
                 return RedirectToAction(
                     "Index",
                     "Home");
+            }
+
+            if (result.IsLockedOut)
+            {
+                await _auditLogService.LogAsync(
+                    $"Account locked out after repeated failed login attempts: {model.Email}");
+
+                ModelState.AddModelError(
+                    "",
+                    "This account has been locked out due to multiple failed login attempts. Please try again later.");
+
+                return View(model);
             }
 
             ModelState.AddModelError(
                 "",
                 "Invalid email or password.");
 
-            return View();
+            return View(model);
         }
 
         // POST: /Account/Logout
@@ -120,7 +150,13 @@ namespace ABCRetail.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+            string userEmail =
+                User.Identity?.Name ?? "Unknown user";
+
             await _signInManager.SignOutAsync();
+
+            await _auditLogService.LogAsync(
+                $"User logged out: {userEmail}");
 
             return RedirectToAction(
                 "Index",

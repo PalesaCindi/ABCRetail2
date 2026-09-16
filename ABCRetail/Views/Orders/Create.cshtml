@@ -45,7 +45,7 @@
                              class="text-danger mb-3">
                         </div>
 
-                        <!-- Customer ID -->
+                        <!-- CUSTOMER -->
                         <div class="mb-3">
 
                             <label asp-for="CustomerId"
@@ -75,7 +75,8 @@
 
                         </div>
 
-                        <!-- Product ID -->
+
+                        <!-- PRODUCT -->
                         <div class="mb-3">
 
                             <label asp-for="ProductId"
@@ -84,15 +85,18 @@
                             </label>
 
                             <select asp-for="ProductId"
+                                    id="productSelect"
                                     class="form-select">
 
-                                <option value="">
+                                <option value=""
+                                        data-price="0">
                                     -- Select Product --
                                 </option>
 
                                 @foreach (var product in ViewBag.Products)
                                 {
-                                    <option value="@product.Id">
+                                    <option value="@product.Id"
+                                            data-price="@product.Price">
                                         @product.ProductName - R @product.Price.ToString("N2")
                                     </option>
                                 }
@@ -105,7 +109,8 @@
 
                         </div>
 
-                        <!-- Quantity -->
+
+                        <!-- QUANTITY -->
                         <div class="mb-3">
 
                             <label asp-for="Quantity"
@@ -114,8 +119,10 @@
                             </label>
 
                             <input asp-for="Quantity"
+                                   id="quantityInput"
                                    type="number"
                                    min="1"
+                                   value="1"
                                    class="form-control"
                                    placeholder="Enter quantity" />
 
@@ -125,7 +132,32 @@
 
                         </div>
 
-                        <!-- Total Amount -->
+
+                        <!-- UNIT PRICE -->
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Unit Price
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    R
+                                </span>
+
+                                <input type="text"
+                                       id="unitPrice"
+                                       class="form-control"
+                                       value="0.00"
+                                       readonly />
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- TOTAL AMOUNT -->
                         <div class="mb-4">
 
                             <label asp-for="TotalAmount"
@@ -140,11 +172,13 @@
                                 </span>
 
                                 <input asp-for="TotalAmount"
+                                       id="totalAmount"
                                        type="number"
                                        min="0"
                                        step="0.01"
                                        class="form-control"
-                                       placeholder="0.00" />
+                                       value="0.00"
+                                       readonly />
 
                             </div>
 
@@ -152,9 +186,14 @@
                                   class="text-danger">
                             </span>
 
+                            <small class="text-muted">
+                                Total Amount = Unit Price × Quantity
+                            </small>
+
                         </div>
 
-                        <!-- Buttons -->
+
+                        <!-- BUTTONS -->
                         <div class="d-flex gap-2">
 
                             <button type="submit"
@@ -181,8 +220,86 @@
 
 </div>
 
+
 @section Scripts {
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+
+        function calculateTotal() {
+
+            const productSelect =
+                document.getElementById("productSelect");
+
+            const quantityInput =
+                document.getElementById("quantityInput");
+
+            const unitPriceInput =
+                document.getElementById("unitPrice");
+
+            const totalAmountInput =
+                document.getElementById("totalAmount");
+
+
+            // Get selected product
+            const selectedOption =
+                productSelect.options[
+                    productSelect.selectedIndex
+                ];
+
+
+            // Get product price
+            const price =
+                parseFloat(
+                    selectedOption.getAttribute("data-price")
+                ) || 0;
+
+
+            // Get quantity
+            const quantity =
+                parseInt(quantityInput.value) || 0;
+
+
+            // Calculate total
+            const total =
+                price * quantity;
+
+
+            // Display unit price
+            unitPriceInput.value =
+                price.toFixed(2);
+
+
+            // Display total
+            totalAmountInput.value =
+                total.toFixed(2);
+        }
+
+
+        // Recalculate when product changes
+        document
+            .getElementById("productSelect")
+            .addEventListener(
+                "change",
+                calculateTotal
+            );
+
+
+        // Recalculate when quantity changes
+        document
+            .getElementById("quantityInput")
+            .addEventListener(
+                "input",
+                calculateTotal
+            );
+
+
+        // Calculate when page loads
+        calculateTotal();
+
+    </script>
 }
+
